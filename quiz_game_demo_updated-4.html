@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#242424">
+<title>اختر الإجابة الصحيحة من 1 إلى 10</title>
+<style>
+:root{--bg:#202020;--panel:#303030;--panel2:#393939;--gold:#c9a84c;--gold2:#e4c66d;--white:#f5f2e9;--muted:#c3c0b8;--red:#d84b4b}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at top,#34322b 0%,#202020 55%);color:var(--white);font-family:Tahoma,Arial,sans-serif;display:grid;place-items:center;padding:18px}
+.app{width:min(720px,100%);background:rgba(39,39,39,.96);border:1px solid #5d5133;border-radius:22px;padding:clamp(20px,5vw,38px);box-shadow:0 18px 55px #0008}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:26px}
+.brand{color:var(--gold2);font-weight:bold;font-size:clamp(16px,3vw,20px)}
+.player{font-size:13px;color:var(--muted)}
+h1{font-size:clamp(25px,5vw,36px);line-height:1.5;text-align:center;margin:10px 0 8px}
+.subtitle{text-align:center;color:var(--muted);line-height:1.8;margin:0 auto 26px;max-width:500px}
+button{font:inherit;cursor:pointer;border:1px solid var(--gold);border-radius:13px;padding:15px 18px;background:linear-gradient(135deg,#d6b65d,#b18e39);color:#211d12;font-weight:bold;transition:.15s}
+button:hover{filter:brightness(1.08);transform:translateY(-1px)}
+button:focus-visible{outline:3px solid white;outline-offset:3px}
+.primary{display:block;width:min(320px,100%);margin:18px auto}
+.secondary{background:#343434;color:var(--white);border-color:#76663e}
+.menu-actions{display:grid;gap:12px;max-width:330px;margin:25px auto 0}
+.hidden{display:none!important}
+.progress-wrap{height:8px;background:#494949;border-radius:99px;overflow:hidden;margin:12px 0 22px}
+.progress{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width .25s}
+.meta{display:flex;justify-content:space-between;color:var(--muted);font-size:13px;gap:10px}
+.question{background:#333;border:1px solid #625431;border-radius:16px;padding:22px 16px;text-align:center;font-size:clamp(19px,4vw,25px);line-height:1.7;margin:18px 0}
+.answers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.answer{min-height:92px;background:#3a3a3a;color:var(--white);border:1px solid #9a8245;border-bottom:4px solid var(--gold);padding:12px 8px;display:flex;align-items:center;justify-content:center;line-height:1.5}
+.answer .num{display:block;color:var(--gold2);font-size:12px;margin-bottom:5px}
+.notice{text-align:center;color:var(--gold2);font-weight:bold;line-height:1.8;margin:18px 0}
+.door{border:1px solid var(--gold);background:linear-gradient(145deg,#3c3a32,#292929);border-radius:18px;padding:25px;text-align:center}
+.door-icon{font-size:48px;color:var(--gold2);margin-bottom:8px}
+.result-mark{font-size:64px;margin:10px}
+.small{font-size:13px;color:var(--muted);text-align:center;line-height:1.8}
+@media(max-width:480px){.answers{gap:8px}.answer{min-height:100px;font-size:14px;padding:8px 5px}.app{padding:19px 14px}.top{margin-bottom:18px}}
+</style>
+</head>
+<body>
+<main class="app">
+  <div class="top"><div class="brand">تحدّي الأسئلة</div><div class="player">نواف صالح بن محمد الهزيم</div></div>
+
+  <section id="home">
+    <h1>اختر الإجابة الصحيحة<br>من 1 إلى 10</h1>
+    <p class="subtitle">اختبر معلوماتك في الدراسة والألعاب والحياة، وأكمل المراحل العشر لتحقق الفوز الأسطوري!</p>
+    <div class="menu-actions">
+      <button class="primary" onclick="startGame()">ابدأ اللعب</button>
+      <button class="secondary" onclick="showSettings()">الإعدادات</button>
+      <button class="secondary" onclick="exitGame()">الخروج من اللعبة</button>
+    </div>
+    <p class="small" id="homeMessage">10 أسئلة • 3 صناديق في كل سؤال</p>
+  </section>
+
+  <section id="settings" class="hidden">
+    <h1>الإعدادات</h1>
+    <p class="subtitle">اللعبة تعمل مباشرة من المتصفح. يمكنك تشغيل الصوت أو إيقافه من هنا.</p>
+    <button class="primary secondary" id="soundBtn" onclick="toggleSound()">الصوت: متوقف</button>
+    <button class="primary" onclick="show('home')">رجوع للقائمة الرئيسية</button>
+  </section>
+
+  <section id="game" class="hidden">
+    <div class="meta"><span id="stageName">عالم الدراسة</span><span id="counter">السؤال 1 من 10</span></div>
+    <div class="progress-wrap"><div class="progress" id="progress"></div></div>
+    <div class="question" id="question"></div>
+    <div class="answers" id="answers"></div>
+    <p class="small" id="feedback">اختر صندوقًا واحدًا فقط</p>
+  </section>
+
+  <section id="transition" class="hidden">
+    <div class="door">
+      <div class="door-icon">✦</div>
+      <h1 id="transitionTitle">عالم جديد</h1>
+      <p class="subtitle" id="transitionText"></p>
+      <button class="primary" onclick="continueAfterTransition()">دخول العالم</button>
+    </div>
+  </section>
+
+  <section id="lose" class="hidden">
+    <div class="result-mark" style="color:var(--red);text-align:center">✕</div>
+    <h1>للأسف خسرت في السؤال</h1>
+    <p class="subtitle">سوف ترجع إلى المرحلة الأولى</p>
+    <button class="primary" onclick="startGame()">العودة إلى السؤال الأول</button>
+  </section>
+
+  <section id="win" class="hidden">
+    <div class="result-mark" style="color:var(--gold2);text-align:center">★</div>
+    <h1>مبروك الفوز الأسطوري!</h1>
+    <p class="subtitle">أكملت الأسئلة العشرة بنجاح. إنجاز رائع!</p>
+    <button class="primary" onclick="show('home')">العودة إلى القائمة الرئيسية</button>
+  </section>
+</main>
+<script>
+const questions = [
+ {cat:"عالم الدراسة",q:"كم يساوي 15 × 4؟",a:["50","60","70"],correct:1},
+ {cat:"عالم الدراسة",q:"ما جمع كلمة «قلم»؟",a:["أقلام","قلمان","قلمون"],correct:0},
+ {cat:"عالم الدراسة",q:"ما العضو المسؤول عن ضخ الدم في جسم الإنسان؟",a:["الرئة","الكبد","القلب"],correct:2},
+ {cat:"عالم الألعاب",q:"ما الشركة المطورة للعبة Minecraft؟",a:["Epic Games","Mojang","Rockstar"],correct:1},
+ {cat:"عالم الألعاب",q:"ما اسم لعبة كرة القدم الشهيرة من EA؟",a:["FIFA","Fortnite","Minecraft"],correct:0},
+ {cat:"عالم الألعاب",q:"أي جهاز من الأجهزة التالية من إنتاج Sony؟",a:["Xbox","Nintendo Switch","PlayStation"],correct:2},
+ {cat:"عالم الحياة",q:"في أي عام استرد الملك عبدالعزيز مدينة الرياض؟",a:["1902","1906","1909"],correct:0},
+ {cat:"عالم الحياة",q:"كم عدد أيام السنة العادية؟",a:["360","365","370"],correct:1},
+ {cat:"عالم الحياة",q:"ما عاصمة المملكة العربية السعودية؟",a:["جدة","مكة المكرمة","الرياض"],correct:2},
+ {cat:"التحدي الأسطوري",q:"ما الشيء الذي كلما أخذت منه كبر؟",a:["البحر","الحفرة","الجبل"],correct:1}
+];
+let current=0, sound=false, pendingTransition=false;
+const sections=["home","settings","game","transition","lose","win"];
+function show(id){sections.forEach(s=>document.getElementById(s).classList.toggle("hidden",s!==id));}
+function startGame(){current=0;renderQuestion();show("game");}
+function showSettings(){show("settings");}
+function exitGame(){document.getElementById("homeMessage").textContent="يمكنك إغلاق صفحة المتصفح للخروج من اللعبة.";show("home");}
+function toggleSound(){sound=!sound;document.getElementById("soundBtn").textContent="الصوت: "+(sound?"مفعّل":"متوقف");}
+function renderQuestion(){
+ const item=questions[current];
+ document.getElementById("stageName").textContent=item.cat;
+ document.getElementById("counter").textContent=`السؤال ${current+1} من 10`;
+ document.getElementById("progress").style.width=((current)/10*100)+"%";
+ document.getElementById("question").textContent=item.q;
+ document.getElementById("feedback").textContent="اختر صندوقًا واحدًا فقط";
+ const box=document.getElementById("answers");box.innerHTML="";
+ item.a.forEach((answer,index)=>{
+   const btn=document.createElement("button");btn.className="answer";
+   btn.innerHTML=`<span><span class="num">الصندوق ${index+1}</span>${answer}</span>`;
+   btn.addEventListener("click",()=>choose(index));box.appendChild(btn);
+ });
+}
+function choose(index){
+ const item=questions[current];
+ if(index!==item.correct){show("lose");return;}
+ current++;
+ if(current===10){document.getElementById("progress").style.width="100%";show("win");return;}
+ if(current===3){showTransition("الآن أنت في الأسئلة عن الألعاب","أحسنت! أنهيت عالم الدراسة. استعد لأسئلة الألعاب.");return;}
+ if(current===6){showTransition("أنت الآن في الأسئلة عن الحياة","رائع! أنهيت عالم الألعاب. حان وقت أسئلة الحياة.");return;}
+ renderQuestion();
+}
+function showTransition(title,txt){document.getElementById("transitionTitle").textContent=title;document.getElementById("transitionText").textContent=txt;show("transition");}
+function continueAfterTransition(){renderQuestion();show("game");}
+</script>
+</body>
+</html>
